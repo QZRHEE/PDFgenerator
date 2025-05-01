@@ -49,6 +49,11 @@ async function generatePDFs(links) {
   console.log(`📄 PDF 생성 중: ${link}`);
   await page.goto(link, { waitUntil: 'networkidle0' });
 
+// ✅ 팝업 제거 (Gen 2 소개 배너)
+await page.evaluate(() => {
+  const popup = document.querySelector('[aria-label="Introducing Amplify Gen 2"]')?.closest('div');
+  if (popup) popup.remove();
+});
 
     await page.pdf({
       path: filePath,
@@ -69,7 +74,7 @@ async function mergePDFs() {
 
   for (const file of files) {
     console.log(`🔗 병합 중: ${file}`);
-    merger.add(path.join(OUTPUT_DIR, file));
+    await merger.add(path.join(OUTPUT_DIR, file));
   }
 
   await merger.save(MERGED_FILE);
