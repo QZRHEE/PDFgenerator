@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "jsdom": "^26.1.0",
+    "node-fetch": "^3.3.2",
+    "pdf-merger-js": "^5.1.2",
+    "puppeteer": "^24.7.2"
+  }
+}
