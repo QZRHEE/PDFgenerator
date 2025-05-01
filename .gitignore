@@ -4,6 +4,7 @@ package-lock.json
 
 # PDF 결과물
 pdfs/
+*.pdf
 
 # OS/IDE 관련
 .DS_Store

@@ -36,11 +36,19 @@ async function generatePDFs(links) {
   }
 
   for (const link of links) {
-    console.log(`📄 PDF 생성 중: ${link}`);
-    await page.goto(link, { waitUntil: 'networkidle0' });
-
+  
     const slug = link.replace(BASE_URL + '/swift/', '').replace(/\//g, '_') || 'index';
     const filePath = path.join(OUTPUT_DIR, `${slug}.pdf`);
+
+  // ✅ 이미 생성된 경우 건너뛰기
+  if (fs.existsSync(filePath)) {
+    console.log(`⏭️ 이미 존재함: ${slug}.pdf → 건너뜀`);
+    continue;
+  }
+
+  console.log(`📄 PDF 생성 중: ${link}`);
+  await page.goto(link, { waitUntil: 'networkidle0' });
+
 
     await page.pdf({
       path: filePath,
