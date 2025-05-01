@@ -49,12 +49,30 @@ async function generatePDFs(links) {
   console.log(`📄 PDF 생성 중: ${link}`);
   await page.goto(link, { waitUntil: 'networkidle0' });
 
-// ✅ 팝업 제거 (Gen 2 소개 배너)
+// ✅ 스타일 적용해서 모든 fixed + z-index 높은 팝업 제거
 await page.evaluate(() => {
-  const popup = document.querySelector('[aria-label="Introducing Amplify Gen 2"]')?.closest('div');
-  if (popup) popup.remove();
-});
+  // "Introducing Amplify Gen 2"가 들어간 모든 요소 제거
+  const divs = Array.from(document.querySelectorAll('div'));
+  for (const el of divs) {
+    const text = el.innerText || '';
+    const style = window.getComputedStyle(el);
 
+    // 텍스트가 포함되어 있고, 화면 위에 떠 있는 스타일이면 제거
+    if (
+      text.includes('Introducing Amplify Gen 2') &&
+      (style.position === 'fixed' || style.position === 'absolute') &&
+      parseInt(style.zIndex || '0') >= 10
+    ) {
+      el.remove(); // ✅ 확실히 제거
+    }
+  }
+
+  // 혹시 모르게 남은 모든 fixed 요소들 제거 (광역처리)
+  const fixedElements = Array.from(document.querySelectorAll('*'))
+    .filter(el => getComputedStyle(el).position === 'fixed');
+
+  fixedElements.forEach(el => el.remove());
+});
     await page.pdf({
       path: filePath,
       format: 'A4',
